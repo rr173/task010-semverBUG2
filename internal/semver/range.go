@@ -91,6 +91,10 @@ func splitOp(tok string) (op, vspec string, err error) {
 func parsePartial(s, tok string) (partial, error) {
 	var p partial
 	rest := s
+	// 范围项中的构建元数据允许出现但被忽略。
+	if i := strings.Index(rest, "+"); i >= 0 {
+		rest = rest[:i]
+	}
 	// 预发布标识以 "-" 引导。
 	if i := strings.Index(rest, "-"); i >= 0 {
 		prePart := rest[i+1:]
@@ -100,10 +104,6 @@ func parsePartial(s, tok string) (partial, error) {
 			return p, err
 		}
 		p.pre = ps
-	}
-	// 范围项中的构建元数据允许出现但被忽略。
-	if i := strings.Index(rest, "+"); i >= 0 {
-		rest = rest[:i]
 	}
 	core := strings.Split(rest, ".")
 	if len(core) == 0 || len(core) > 3 {
